@@ -43,11 +43,8 @@ public class GetChannels {
                 }
                 channels.add(new Channel(
                         eElement.getAttribute("name"),
-                        eElement.getAttribute("id"), image));
-                        //eElement.getElementsByTagName("image").item(0).getTextContent()));
-                //System.out.println("First Name : "  + eElement.getElementsByTagName("firstName").item(0).getTextContent());
-                /*System.out.println("Last Name : "   + eElement.getElementsByTagName("lastName").item(0).getTextContent());
-                System.out.println("Location : "    + eElement.getElementsByTagName("location").item(0).getTextContent());*/
+                        //TODO: Uncomment image when done
+                        eElement.getAttribute("id"), null /*image*/));
             }
         }
         return channels;

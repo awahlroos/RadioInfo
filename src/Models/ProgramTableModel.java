@@ -1,20 +1,19 @@
 package Models;
 
-import Models.Channel;
-
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
-public class ProgramListModel extends AbstractTableModel {
-    ArrayList<Channel> cList;
+public class ProgramTableModel extends AbstractTableModel {
 
-    public ProgramListModel() {
-        cList=new ArrayList<>();
+    ArrayList<Channel> channelList;
+
+    public ProgramTableModel() {
+        channelList =new ArrayList<>();
     }
 
     public void addChannel(Channel c) {
-        cList.add(c);
-        this.fireTableRowsInserted(cList.size(), cList.size());
+        channelList.add(c);
+        this.fireTableRowsInserted(channelList.size()-1, channelList.size());
     }
 
     /**
@@ -41,7 +40,7 @@ public class ProgramListModel extends AbstractTableModel {
      */
     @Override
     public int getColumnCount() {
-        return cList.size();
+        return channelList.size();
     }
 
     /**
@@ -54,7 +53,7 @@ public class ProgramListModel extends AbstractTableModel {
      */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Channel channel=cList.get(rowIndex);
+        Channel channel= channelList.get(rowIndex);
         return switch (columnIndex) {
             case 0 -> channel.getName();
             default -> null;

@@ -18,16 +18,13 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
     ArrayList<Channel> channels = new ArrayList<>();
     GetChannels getChannels = new GetChannels();
 
-    public ChannelWorker(){
-
-    }
+    public ChannelWorker(){}
 
     //TODO: Flytta inläsning av data från swing till annan tråd (Thread, timer, etc)
     @Override
     protected ArrayList<Channel> doInBackground() throws ParserConfigurationException, IOException, SAXException {
         return getChannels.getFromAPI();
     }
-
 
     @Override
     public void done(){
