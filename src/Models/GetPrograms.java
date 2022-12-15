@@ -46,12 +46,6 @@ public class GetPrograms {
                 System.out.println("Location : "    + eElement.getElementsByTagName("location").item(0).getTextContent());*/
             }
         }
-        for(Program p : programs){
-            System.out.println(p.getName());
-            System.out.println(p.getStartTime());
-            System.out.println(p.getEndTime());
-            System.out.println("-----------------------");
-        }
 
         return programs;
     }

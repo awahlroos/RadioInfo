@@ -14,6 +14,7 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object> {
 
     ArrayList<Program> programs = new ArrayList<>();
     GetPrograms getPrograms;
+    ProgramTimer timer;
 
     public ProgramWorker(Channel channel) {
         getPrograms = new GetPrograms(channel);
@@ -40,6 +41,18 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object> {
     public void done(){
         try {
             programs = get();
+            for(Program p : programs){
+                System.out.println(p.getName());
+                System.out.println(p.getStartTime());
+                System.out.println(p.getEndTime());
+                System.out.println("-----------------------");
+            }
+            timer = new ProgramTimer();
+            //Programdata ska laddas ner första gången en användare väljer att visa program från en kanal
+            // och ska sedan automatiskt uppdateras med nytt data från servern en gång i timmen eller då
+            // användaren manuellt väljer att uppdatera datat.  Om kanaldata redan visats av användaren
+            // ska inget nytt data laddas ner vid kanalbyte utan det cashade datat användas.
+            timer.startTimer();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {

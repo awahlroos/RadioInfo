@@ -17,18 +17,18 @@ import java.util.ArrayList;
 
 public class StartView {
     private final JFrame frame;
-    private ArrayList<Channel> channels;
     private JButton button;
 
-    public StartView(String title, ArrayList<Channel> channels) {
-        this.channels = channels;
+    private JPanel upperPanel;
+
+    public StartView(String title) {
         //Create the top level frame/window
         frame=new JFrame(title);
         frame.setPreferredSize(new Dimension(800,600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Build panels
-        JPanel upperPanel = buildUpperPanel();
+        upperPanel = new JPanel();
 
         //Add panels to the frame
         frame.add(upperPanel, BorderLayout.CENTER);
@@ -37,35 +37,31 @@ public class StartView {
         frame.setVisible(true);
     }
 
-    private JPanel buildUpperPanel(){
+    /*private JPanel buildUpperPanel(){
         //Create panel
-        JPanel upperPanel = new JPanel();
 
-        for (Channel c : channels) {
 
-            button = new JButton(c.getName());
-            try{
-                Image img = new ImageIcon(new URL(c.getImage()),"image").getImage();
-                Image newImg = img.getScaledInstance(40,40, java.awt.Image.SCALE_SMOOTH);
-                button.setIcon(new ImageIcon(newImg));
-            }
-            catch (java.net.MalformedURLException e){
-
-            }
-
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ProgramWorker worker = new ProgramWorker(c);
-                    worker.execute();
-                }
-            });
-            upperPanel.add(button);
+        for(Channel c : channels){
+            upperPanel.add(setButton( c.getName(),c.getImage()));
         }
 
-        return upperPanel;
-    }
 
+        return upperPanel;
+    }*/
+
+    public void setButton(String name, String imgStr){
+        button = new JButton(name);
+
+        try{
+            Image img = new ImageIcon(new URL(imgStr),"image").getImage();
+            Image newImg = img.getScaledInstance(40,40, java.awt.Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(newImg));
+        }
+        catch (java.net.MalformedURLException e){
+
+        }
+        upperPanel.add(button);
+    }
     public void setChannelButtonListener(ActionListener a){
         button.addActionListener(a);
     }

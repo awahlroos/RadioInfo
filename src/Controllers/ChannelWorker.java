@@ -32,10 +32,15 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
     @Override
     public void done(){
         try {
-            channels = get();
 
-            StartView view = new StartView("Radio Info", channels);
-            //view.setChannelButtonListener(e -> System.out.println("Hej"));
+            channels = get();
+            StartView view = new StartView("Radio Info");
+
+            //Setup for buttons and add listeners
+            for(Channel c : channels){
+                view.setButton(c.getName(), c.getImage());
+                view.setChannelButtonListener(e -> executeWorker(c));
+            }
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -43,6 +48,11 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
             throw new RuntimeException(e);
         }
 
+    }
+
+    private void executeWorker(Channel c){
+        ProgramWorker worker = new ProgramWorker(c);
+        worker.execute();
     }
 
     /*@Override
