@@ -1,9 +1,13 @@
 package Models;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class Program {
 
-    private String name, startTime, endTime;
-    public Program(String name, String startTime, String endTime){
+    private String name;
+    private LocalDateTime startTime, endTime;
+    public Program(String name, LocalDateTime startTime, LocalDateTime endTime){
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -12,10 +16,10 @@ public class Program {
     public String getName(){
         return this.name;
     }
-    public String getStartTime(){
+    public LocalDateTime getStartTime(){
         return this.startTime;
     }
-    public String getEndTime(){
+    public LocalDateTime getEndTime(){
         return this.endTime;
     }
 

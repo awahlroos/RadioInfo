@@ -10,77 +10,93 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class GetPrograms {
-    Channel channel;
+    private Channel channel;
+    private ArrayList<Program> programs;
+
+    private LocalDateTime currentTime;
+    private LocalDateTime startTime;
+    private final LocalDateTime rangeBefore;
+    private final LocalDateTime rangeAfter;
+
     public GetPrograms(Channel channel){
         this.channel = channel;
+        programs = new ArrayList<>();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        currentTime = ZonedDateTime.parse(LocalDateTime.now().format(dtf)).toLocalDateTime().minusHours(10);
+        rangeBefore = currentTime.minusHours(6);
+        rangeAfter = currentTime.plusHours(12);
+        System.out.println("Current time: " + currentTime);
     }
+
     public ArrayList<Program> getFromAPI() throws ParserConfigurationException, IOException, SAXException {
-        ArrayList<Program> programs = new ArrayList<>();
         //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        //Build Document
+        Document document;
 
-        checkTime();
+        if (currentTime.getHour() < 6) {
+            document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
+                    "&pagination=false&date=" + currentTime.minusDays(1));
+            addToProgramList(document);
+        }
 
-        Document document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
+        document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
                 "&pagination=false");
+        addToProgramList(document);
 
-        //Normalize the XML Structure; It's just too important !!
-        document.getDocumentElement().normalize();
+        if(currentTime.getHour() > 11) {
+            document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
+                    "&pagination=false&date=" + currentTime.plusDays(1));
+            addToProgramList(document);
+        }
+        return programs;
+    }
 
-        //Get all employees
-        NodeList nList = document.getElementsByTagName("scheduledepisode");
-
+    private void addToProgramList(Document doc){
+        doc.getDocumentElement().normalize();
+        NodeList nList = doc.getElementsByTagName("scheduledepisode");
 
         for (int temp = 0; temp < nList.getLength(); temp++) {
+
             Node node = nList.item(temp);
             if (node.getNodeType() == Node.ELEMENT_NODE)
             {
                 Element eElement = (Element) node;
                 //TODO: Går att lägga göra så Program tar in bara en node och att man plockar ut
                 //alla attribut i Program istället
-                programs.add(new Program(
-                        eElement.getElementsByTagName("title").item(0).getTextContent(),
-                        eElement.getElementsByTagName("starttimeutc").item(0).getTextContent(),
-                        eElement.getElementsByTagName("endtimeutc").item(0).getTextContent()));
+
+                startTime = convertStringToDate(
+                        eElement.getElementsByTagName("starttimeutc").item(0).getTextContent());
+
+                if(startTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
+                    programs.add(new Program(
+                            eElement.getElementsByTagName("title").item(0).getTextContent(),
+                            startTime,
+                            convertStringToDate(
+                                    eElement.getElementsByTagName("endtimeutc").item(0).getTextContent())));
+                }
+
             }
         }
-        return programs;
     }
 
-    private Integer checkTime(){
-
-
-        //Kommer behöva jämföra sen också mot API:ets format
-        int var = 0;
-
-        String string = "2022-12-15T20:00:00Z";
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private LocalDateTime convertStringToDate(String string){
+        //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         ZonedDateTime parsedDate = ZonedDateTime.parse(string);
         ZonedDateTime zdtLocal = ZonedDateTime.ofInstant(parsedDate.toInstant(), ZoneId.systemDefault());
         //Used for formatting
-        LocalDateTime zdtToLDT = zdtLocal.toLocalDateTime();
-        String formatted = zdtToLDT.format(dtf);
-        System.out.println(formatted);
+        return zdtLocal.toLocalDateTime();
+        //Used for comparison
+        //String formattedDate = zdtToLDT.format(dtf);
 
-
-        String currentTime = LocalDateTime.now().format(dtf);
-        ZonedDateTime currentTimeZDT = ZonedDateTime.parse(currentTime);
-
-        /*if(timenow.getHour() > 11){
-            var=1;
-        } else if (timenow.getHour() < 6) {
-            var=2;
-        }*/
-        return var;
+        //String currentTime = LocalDateTime.now().format(dtf);
+        //ZonedDateTime currentTimeZDT = ZonedDateTime.parse(currentTime);
     }
 }
