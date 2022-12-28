@@ -2,14 +2,14 @@ package Controllers;
 
 import Models.Channel;
 import Models.GetChannels;
-import Models.GetPrograms;
 import Views.StartView;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -17,6 +17,7 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
 
     ArrayList<Channel> channels = new ArrayList<>();
     GetChannels getChannels = new GetChannels();
+    StartView view;
 
     public ChannelWorker(){}
 
@@ -31,13 +32,16 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
         try {
 
             channels = get();
-            StartView view = new StartView("Radio Info");
+            view = new StartView("Radio Info");
+
 
             //Setup for buttons and add listeners
             for(Channel c : channels){
                 view.setButton(c.getName(), c.getImage());
-                view.setChannelButtonListener(e -> executeWorker(c));
+                view.setChannelButtonListener(e -> getData(c, false));
             }
+
+
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -45,24 +49,24 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
             throw new RuntimeException(e);
         }
 
+        //Programdata ska laddas ner första gången en användare väljer att visa program från en kanal
+        // och ska sedan automatiskt uppdateras med nytt data från servern en gång i timmen eller då
+        // användaren manuellt väljer att uppdatera datat.  Om kanaldata redan visats av användaren
+        // ska inget nytt data laddas ner vid kanalbyte utan det cashade datat användas.
     }
 
-    private void executeWorker(Channel c){
-        ProgramWorker worker = new ProgramWorker(c);
-        worker.execute();
+    private void getData(Channel c, boolean forceUpdate){
+        //if(c.isPtmEmpty()){
+        view.setAllChannelsButtonListener(e -> view.setShowChannelsPanel());
+        view.setShowTableauPanel(c.getName(), c.getImage(), c.getTableau());
+
+        if(c.isPtmEmpty()) {
+            ProgramWorker worker = new ProgramWorker(c, view);
+            //Update data
+            worker.execute();
+        } else if(forceUpdate){
+
+        }
     }
 
-    /*@Override
-    public void newChannel(Models.Channel c) {
-        publish(c);
-    }
-
-    enum Parsing {CHANNEL,UNKNOWN}
-
-    private ChannelModel tableModel;
-
-    public Worker(ChannelModel tableModel) {
-        super();
-        this.tableModel=tableModel;
-    }*/
 }

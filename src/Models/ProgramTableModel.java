@@ -5,15 +5,15 @@ import java.util.ArrayList;
 
 public class ProgramTableModel extends AbstractTableModel {
 
-    ArrayList<Channel> channelList;
+    ArrayList<Program> programList;
 
     public ProgramTableModel() {
-        channelList =new ArrayList<>();
+        programList =new ArrayList<>();
     }
 
-    public void addChannel(Channel c) {
-        channelList.add(c);
-        this.fireTableRowsInserted(channelList.size()-1, channelList.size());
+    public void addProgram(Program p) {
+        programList.add(p);
+        this.fireTableRowsInserted(programList.size()-1, programList.size());
     }
 
     /**
@@ -27,7 +27,7 @@ public class ProgramTableModel extends AbstractTableModel {
      */
     @Override
     public int getRowCount() {
-        return 2;
+        return programList.size();
     }
 
     /**
@@ -40,7 +40,7 @@ public class ProgramTableModel extends AbstractTableModel {
      */
     @Override
     public int getColumnCount() {
-        return channelList.size();
+        return 3;
     }
 
     /**
@@ -53,9 +53,28 @@ public class ProgramTableModel extends AbstractTableModel {
      */
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        Channel channel= channelList.get(rowIndex);
+        Program program= programList.get(rowIndex);
         return switch (columnIndex) {
-            case 0 -> channel.getName();
+            case 0 -> program.getName();
+            case 1 -> program.getStartTime();
+            case 2 -> program.getEndTime();
+            default -> null;
+        };
+    }
+
+    public Program getProgramDetails(int rowIndex){
+        System.out.println(rowIndex);
+        System.out.println(programList.size());
+        return programList.get(rowIndex);
+    }
+
+    @Override
+    public String getColumnName(int columnIndex) {
+
+        return switch (columnIndex) {
+            case 0 -> "Program";
+            case 1 -> "Startar";
+            case 2 -> "Slutar";
             default -> null;
         };
     }

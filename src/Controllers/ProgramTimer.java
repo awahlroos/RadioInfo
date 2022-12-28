@@ -21,7 +21,8 @@ public class ProgramTimer extends Timer {
             public void run() {
                 System.out.println("hej");
             }
-        }, 0, 1000);
+        }, 0, 5000);
     }
+
 
 }

@@ -12,30 +12,31 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class GetPrograms {
-    private Channel channel;
-    private ArrayList<Program> programs;
-
-    private LocalDateTime currentTime;
-    private LocalDateTime startTime;
+    private final Channel channel;
+    private final LocalDateTime currentTime;
     private final LocalDateTime rangeBefore;
     private final LocalDateTime rangeAfter;
+    private ArrayList<Program> programList;
 
     public GetPrograms(Channel channel){
         this.channel = channel;
-        programs = new ArrayList<>();
+        programList = new ArrayList<>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        currentTime = ZonedDateTime.parse(LocalDateTime.now().format(dtf)).toLocalDateTime().minusHours(10);
+        currentTime = ZonedDateTime.parse(LocalDateTime.now().format(dtf)).toLocalDateTime();
         rangeBefore = currentTime.minusHours(6);
         rangeAfter = currentTime.plusHours(12);
-        System.out.println("Current time: " + currentTime);
     }
 
-    public ArrayList<Program> getFromAPI() throws ParserConfigurationException, IOException, SAXException {
+    public ArrayList<Program> addFromAPI() throws ParserConfigurationException, IOException, SAXException {
+
+
+        System.out.println("--- Hämtning från API:et för kanal: " + channel.getName() + " ---");
+
+
         //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -56,7 +57,7 @@ public class GetPrograms {
                     "&pagination=false&date=" + currentTime.plusDays(1));
             addToProgramList(document);
         }
-        return programs;
+        return programList;
     }
 
     private void addToProgramList(Document doc){
@@ -69,34 +70,46 @@ public class GetPrograms {
             if (node.getNodeType() == Node.ELEMENT_NODE)
             {
                 Element eElement = (Element) node;
-                //TODO: Går att lägga göra så Program tar in bara en node och att man plockar ut
-                //alla attribut i Program istället
 
-                startTime = convertStringToDate(
+                LocalDateTime startTime = convertStringToDate(
                         eElement.getElementsByTagName("starttimeutc").item(0).getTextContent());
 
-                if(startTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
-                    programs.add(new Program(
-                            eElement.getElementsByTagName("title").item(0).getTextContent(),
-                            startTime,
-                            convertStringToDate(
-                                    eElement.getElementsByTagName("endtimeutc").item(0).getTextContent())));
-                }
 
+                if(startTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
+
+                    String description = "";
+                    if(!(eElement.getElementsByTagName("description").getLength() == 0)){
+                        description = eElement.getElementsByTagName("description").item(0).getTextContent();
+                    }
+
+                    String image = null;
+                    if(!(eElement.getElementsByTagName("imageurl").getLength() == 0)){
+                        image = eElement.getElementsByTagName("imageurl").item(0).getTextContent();
+                    }
+
+                    Program program = new Program(
+                            eElement.getElementsByTagName("title").item(0).getTextContent(),
+                            formatDate(startTime),
+                            formatDate(convertStringToDate(
+                                    eElement.getElementsByTagName("endtimeutc").item(0).getTextContent())),
+                            description,
+                            image);
+                    //channel.updatePTM(program);
+                    programList.add(program);
+                }
             }
         }
     }
 
     private LocalDateTime convertStringToDate(String string){
-        //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         ZonedDateTime parsedDate = ZonedDateTime.parse(string);
         ZonedDateTime zdtLocal = ZonedDateTime.ofInstant(parsedDate.toInstant(), ZoneId.systemDefault());
-        //Used for formatting
         return zdtLocal.toLocalDateTime();
-        //Used for comparison
-        //String formattedDate = zdtToLDT.format(dtf);
+    }
 
-        //String currentTime = LocalDateTime.now().format(dtf);
-        //ZonedDateTime currentTimeZDT = ZonedDateTime.parse(currentTime);
+    private String formatDate(LocalDateTime date){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
+        String strDate = date.format(dtf);
+        return strDate;
     }
 }

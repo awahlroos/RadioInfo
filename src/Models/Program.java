@@ -1,26 +1,29 @@
 package Models;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 public class Program {
 
-    private String name;
-    private LocalDateTime startTime, endTime;
-    public Program(String name, LocalDateTime startTime, LocalDateTime endTime){
+    private String name, startTime, endTime, description, image;
+    public Program(String name, String startTime, String endTime, String description, String image){
         this.name = name;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.description = description;
+        this.image = image;
     }
 
     public String getName(){
         return this.name;
     }
-    public LocalDateTime getStartTime(){
+    public String getStartTime(){
         return this.startTime;
     }
-    public LocalDateTime getEndTime(){
+    public String getEndTime(){
         return this.endTime;
     }
-
+    public String getDescription(){
+        return this.description;
+    }
+    public String getImage() {
+        return image;
+    }
 }

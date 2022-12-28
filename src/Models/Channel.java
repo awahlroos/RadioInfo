@@ -7,11 +7,13 @@ public class Channel {
     private String name;
     private String id;
     private String image;
+    private ProgramTableModel ptm;
 
     public Channel(String name, String id, String image){
         this.image = image;
         this.name = name;
         this.id = id;
+        ptm = new ProgramTableModel();
     }
     public String getName() {
         return name;
@@ -24,4 +26,17 @@ public class Channel {
     public String getImage() {
         return image;
     }
+
+    public boolean isPtmEmpty(){
+        return ptm.getRowCount() == 0;
+    }
+
+    public ProgramTableModel getTableau(){
+        return ptm;
+    }
+    public void updatePTM(Program p){
+        ptm.addProgram(p);
+    }
+
+
 }
