@@ -4,39 +4,38 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
+import javax.crypto.spec.PSource;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.time.*;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
+import java.util.List;
 
-public class GetPrograms {
+public class ProgramHandler extends SwingWorker<Void, Program> {
+
     private final Channel channel;
     private final LocalDateTime currentTime;
     private final LocalDateTime rangeBefore;
     private final LocalDateTime rangeAfter;
-    private ArrayList<Program> programList;
 
-    public GetPrograms(Channel channel){
+    public ProgramHandler(Channel channel){
         this.channel = channel;
-        programList = new ArrayList<>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         currentTime = ZonedDateTime.parse(LocalDateTime.now().format(dtf)).toLocalDateTime();
         rangeBefore = currentTime.minusHours(6);
         rangeAfter = currentTime.plusHours(12);
     }
 
-    public ArrayList<Program> addFromAPI() throws ParserConfigurationException, IOException, SAXException {
+    @Override
+    protected Void doInBackground() throws Exception {
 
-
-        System.out.println("--- Hämtning från API:et för kanal: " + channel.getName() + " ---");
-
-
+        System.out.println("----- Hämtning från API, kanal: " + channel.getName() + " -----");
+        System.out.println(LocalDateTime.now().getSecond());
         //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -57,11 +56,10 @@ public class GetPrograms {
                     "&pagination=false&date=" + currentTime.plusDays(1));
             addToProgramList(document);
         }
-
-        return programList;
+        return null;
     }
 
-    private void addToProgramList(Document doc){
+    private void addToProgramList(Document doc) throws InterruptedException {
         doc.getDocumentElement().normalize();
         NodeList nList = doc.getElementsByTagName("scheduledepisode");
 
@@ -95,8 +93,8 @@ public class GetPrograms {
                                     eElement.getElementsByTagName("endtimeutc").item(0).getTextContent())),
                             description,
                             image);
-                    //channel.updatePTM(program);
-                    programList.add(program);
+
+                    publish(program);
                 }
             }
         }
@@ -112,5 +110,13 @@ public class GetPrograms {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
         String strDate = date.format(dtf);
         return strDate;
+    }
+
+    //Update the PTM on EDT
+    @Override
+    protected void process(List<Program> chunks) {
+        for(Program p : chunks){
+            channel.updatePTM(p);
+        }
     }
 }

@@ -31,12 +31,15 @@ public class Channel {
         return ptm.getRowCount() == 0;
     }
 
-    public ProgramTableModel getTableau(){
+    //TODO: Remove this, only for testing
+    public int getTableauSizeTesting(){
+        return ptm.getTableu().size();
+    }
+
+    public ProgramTableModel getPTM(){
         return ptm;
     }
     public void updatePTM(Program p){
         ptm.addProgram(p);
     }
-
-
 }

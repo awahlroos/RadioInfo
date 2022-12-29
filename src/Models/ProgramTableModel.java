@@ -8,7 +8,7 @@ public class ProgramTableModel extends AbstractTableModel {
     ArrayList<Program> programList;
 
     public ProgramTableModel() {
-        programList =new ArrayList<>();
+        programList = new ArrayList<>();
     }
 
     public void addProgram(Program p) {
@@ -63,8 +63,6 @@ public class ProgramTableModel extends AbstractTableModel {
     }
 
     public Program getProgramDetails(int rowIndex){
-        System.out.println(rowIndex);
-        System.out.println(programList.size());
         return programList.get(rowIndex);
     }
 
@@ -77,5 +75,14 @@ public class ProgramTableModel extends AbstractTableModel {
             case 2 -> "Slutar";
             default -> null;
         };
+    }
+
+    //TODO: Remove this, only for testing
+    public ArrayList<Program> getTableu(){
+        return programList;
+    }
+
+    public void resetProgramList(){
+        programList = new ArrayList<>();
     }
 }

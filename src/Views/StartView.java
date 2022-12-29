@@ -3,12 +3,11 @@ package Views;
 import Models.ProgramTableModel;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class StartView {
     private final JFrame frame;
@@ -26,6 +25,8 @@ public class StartView {
     private String name;
     private CardLayout cl = new CardLayout();
     private JPanel panelContent = new JPanel();
+
+    private boolean channelsViewActive;
 
 
     public StartView(String title) {
@@ -60,38 +61,22 @@ public class StartView {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-    }
-
-
-    private void buildTableauPanel(){
-
+        channelsViewActive = true;
     }
 
     public void setShowChannelsPanel(){
         cl.show(panelContent, "channels");
+        channelsViewActive = true;
     }
 
     public void setShowTableauPanel(String name, String image, ProgramTableModel tbl){
 
-        this.image = image;
-        this.description = description;
 
         tableauPanel.removeAll();
+        this.image = image;
+        tableauTable = new JTable();
+        panelContent.add(tableauPanel, "tableau");
         tableauTable.setModel(tbl);
-
-
-        //TODO: Kan detta lösas mha controller som de andra listeners
-
-        /*tableauTable.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                System.out.println("Klickad");
-                int programRow = tableauTable.rowAtPoint(e.getPoint());
-                showDetails(programRow);
-            }
-        });*/
-
 
 
         JScrollPane scrollPane = new JScrollPane(tableauTable);
@@ -107,19 +92,26 @@ public class StartView {
         tableauPanel.add(container);
 
         cl.show(panelContent, "tableau");
-
+        channelsViewActive = false;
     }
 
     public void setButton(String name, String imgStr){
         button = new JButton(name);
+        Image img;
+        Image resizedImg;
         try{
-            Image img = new ImageIcon(new URL(imgStr),"image").getImage();
-            Image newImg = img.getScaledInstance(40,40, java.awt.Image.SCALE_SMOOTH);
-            button.setIcon(new ImageIcon(newImg));
+            if(imgStr == null) {
+                URL imageUrl = this.getClass().getResource("/Assets/imageNotFound.png");
+                img = new ImageIcon(imageUrl, "image").getImage();
+            } else {
+                img = new ImageIcon(new URL(imgStr), "image").getImage();
+            }
+            resizedImg = img.getScaledInstance(40,40, java.awt.Image.SCALE_SMOOTH);
+            button.setIcon(new ImageIcon(resizedImg));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
-        catch (java.net.MalformedURLException e){
 
-        }
         channelPanel.add(button);
     }
     public void setChannelButtonListener(ActionListener a){
@@ -140,10 +132,11 @@ public class StartView {
 
     public void showDetails(String name, String startTime, String endTime, String image, String description)
             throws MalformedURLException {
-        JDialog dialog = new JDialog(frameHolder, "Mer information: " + name);
+        JDialog dialog = new JDialog(frameHolder, "Mer information: " + name, true);
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
 
         JLabel nameLabel = new JLabel(name);
         nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -167,15 +160,21 @@ public class StartView {
         resizedImg = img.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH);
         imageLabel.setIcon(new ImageIcon(new ImageIcon(resizedImg).getImage(), "image"));
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        imageLabel.setBorder(new EmptyBorder(10,0,10,0));
         panel.add(imageLabel);
 
-        JLabel descriptionLabel = new JLabel(description);
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(descriptionLabel);
+        JTextArea descriptionJTA = new JTextArea(description);
+        descriptionJTA.setAlignmentX(Component.CENTER_ALIGNMENT);
+        descriptionJTA.setEditable(false);
+        descriptionJTA.setLineWrap(true);
+        descriptionJTA.setWrapStyleWord(true);
+        descriptionJTA.setOpaque(false);
+        descriptionJTA.setSize(new Dimension(300, descriptionJTA.getPreferredSize().height));
+        panel.add(descriptionJTA);
 
         dialog.add(panel);
         dialog.pack();
-        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+        dialog.setLocationRelativeTo(frame);
         dialog.setVisible(true);
     }
 
@@ -183,5 +182,7 @@ public class StartView {
         return tableauTable.rowAtPoint(e.getPoint());
     }
 
-
+    public boolean getChannelsViewActive(){
+        return channelsViewActive;
+    }
 }

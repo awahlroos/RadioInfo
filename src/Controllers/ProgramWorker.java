@@ -41,6 +41,7 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object>{
         //TODO: kanske ändra/flytta den här logiken
         //If the model holding programmes is empty, fetch from api
         //if(channel.isPtmEmpty()) {
+
             return getPrograms.addFromAPI();
         //}
         //return programs;
@@ -92,12 +93,10 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object>{
                 System.out.println(p.getEndTime());
                 System.out.println("-----------------------");
             }*/
-            timer = new ProgramTimer(channel);
             //Programdata ska laddas ner första gången en användare väljer att visa program från en kanal
             // och ska sedan automatiskt uppdateras med nytt data från servern en gång i timmen eller då
             // användaren manuellt väljer att uppdatera datat.  Om kanaldata redan visats av användaren
             // ska inget nytt data laddas ner vid kanalbyte utan det cashade datat användas.
-            timer.startTimer();
         //} catch (InterruptedException e) {
             /*throw new RuntimeException(e);
         } catch (ExecutionException e) {

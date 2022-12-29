@@ -7,17 +7,16 @@ import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
 
-    ArrayList<Channel> channels = new ArrayList<>();
-    GetChannels getChannels = new GetChannels();
-    StartView view;
+    private ArrayList<Channel> channels = new ArrayList<>();
+    private GetChannels getChannels = new GetChannels();
+    private StartView view;
+    private ArrayList<Channel> cachedChannels = new ArrayList<>();
 
     public ChannelWorker(){}
 
@@ -38,10 +37,33 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
             //Setup for buttons and add listeners
             for(Channel c : channels){
                 view.setButton(c.getName(), c.getImage());
-                view.setChannelButtonListener(e -> getData(c, false));
+                view.setChannelButtonListener(e -> {
+                    try {
+                        getData(c, false);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
             }
 
+            view.setUpdateChannelsButtonListener(e -> {
+                for (Channel cachedChannel : cachedChannels) {
+                    try {
+                        getData(cachedChannel, true);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
 
+                //For-loop cannot be enhanced in order to not iterate the actual arraylist and crash
+                /*for(int i = 0; i < cachedChannels.size(); i++){
+                    try {
+                        getData(cachedChannels.get(i), true, view.getChannelsViewActive());
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }*/
+            });
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
@@ -55,18 +77,33 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
         // ska inget nytt data laddas ner vid kanalbyte utan det cashade datat användas.
     }
 
-    private void getData(Channel c, boolean forceUpdate){
-        //if(c.isPtmEmpty()){
+    public void getData(Channel c, boolean forceUpdate) throws InterruptedException {
+
         view.setAllChannelsButtonListener(e -> view.setShowChannelsPanel());
-        view.setShowTableauPanel(c.getName(), c.getImage(), c.getTableau());
+        if(view.getChannelsViewActive() && forceUpdate){
+            view.setShowChannelsPanel();
+        } else if(!view.getChannelsViewActive() && forceUpdate){
+
+        } else {
+            view.setShowTableauPanel(c.getName(), c.getImage(), c.getPTM());
+        }
 
         if(c.isPtmEmpty()) {
-            ProgramWorker worker = new ProgramWorker(c, view);
-            //Update data
-            worker.execute();
-        } else if(forceUpdate){
+            //New handler
+            //ProgramWorker worker = new ProgramWorker(c, view);
+            //worker.execute();
+            ProgramTimer timer = new ProgramTimer(c, this);
+            timer.startTimer();
 
+            ProgramController2 controller2 = new ProgramController2(c, view);
+            controller2.getNewData();
+            //TODO: Om en kanal failar att ladda in kommer detta ändå köras, man kan sätta lyssnare för att lösa detta
+            cachedChannels.add(c);
+
+        } else if(forceUpdate){
+            c.getPTM().resetProgramList();
+            ProgramController2 controller2 = new ProgramController2(c, view);
+            controller2.getNewData();
         }
     }
-
 }
