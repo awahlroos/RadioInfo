@@ -35,7 +35,6 @@ public class ProgramHandler extends SwingWorker<Void, Program> {
     protected Void doInBackground() throws Exception {
 
         System.out.println("----- Hämtning från API, kanal: " + channel.getName() + " -----");
-        System.out.println(LocalDateTime.now().getSecond());
         //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();

@@ -22,12 +22,12 @@ public class ProgramTimer extends Timer {
             @Override
             public void run() {
                 try {
-                    worker.getData(channel, true);
+                    worker.getData(channel, false, true );
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
             }
-        }, 5*1000, 5*1000);
+        }, 30*1000, 30*1000);
     }
 
 

@@ -23,8 +23,8 @@ public class ProgramController2 {
 
     public void getNewData(){
 
-        worker = new ProgramHandler(channel);
-        worker.execute();
+        //worker = new ProgramHandler(channel);
+        //worker.execute();
         ProgramTableModel programs = channel.getPTM();
 
         MouseAdapter adapter = new MouseAdapter() {
