@@ -187,7 +187,7 @@ public class StartView {
         return channelsViewActive;
     }
 
-    public void setCursor(Cursor c){
-        this.c = c;
+    public void setViewCursor(Cursor c){
+        frame.setCursor(c);
     }
 }

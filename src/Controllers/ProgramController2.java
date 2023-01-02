@@ -38,7 +38,7 @@ public class ProgramController2 {
     }
 
     public void startWorker(){
-        NewProgramHandler worker = new NewProgramHandler(channel);
+        NewProgramHandler worker = new NewProgramHandler(channel, view);
         worker.execute();
     }
 }
