@@ -21,12 +21,14 @@ public class ProgramController2 {
     public void getNewData(){
 
         ProgramTableModel programs = channel.getPTM();
+
         MouseAdapter adapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int rowIndex = view.getTableuRow(e);
                 Program program = programs.getProgramDetails(rowIndex);
                 try {
+                    System.out.println("showDetails");
                     view.showDetails(program.getName(), program.getStartTime(), program.getEndTime(),
                             program.getImage(), program.getDescription());
                 } catch (MalformedURLException ex) {

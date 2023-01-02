@@ -25,6 +25,7 @@ public class ChannelWorker extends SwingWorker<Void, Object> implements ChannelL
     public ChannelWorker(){
         getChannels.setChangeListener(this);
         view = new StartView("Radio Info");
+        this.execute();
     }
 
     @Override
@@ -45,13 +46,22 @@ public class ChannelWorker extends SwingWorker<Void, Object> implements ChannelL
             //}
 
             view.setUpdateChannelsButtonListener(e -> {
-                for (Channel cachedChannel : cachedChannels) {
+                for(int i=0; i < cachedChannels.size(); i++){
+                    try {
+                        getData(cachedChannels.get(i), true, false);
+                    } catch (InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+
+                //TODO: Maybe use this
+                /*for (Channel cachedChannel : cachedChannels) {
                     try {
                         getData(cachedChannel, true, false);
                     } catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
-                }
+                }*/
             });
             view.setAllChannelsButtonListener(e -> view.setShowChannelsPanel());
 
@@ -61,40 +71,41 @@ public class ChannelWorker extends SwingWorker<Void, Object> implements ChannelL
 
     public void getData(Channel c, boolean forceUpdate, boolean autoUpdate) throws InterruptedException {
 
-        if(view.getChannelsViewActive() && forceUpdate){
-            view.setShowChannelsPanel();
-        } else if((!view.getChannelsViewActive() && forceUpdate && !autoUpdate) ||
-                (view.getChannelsViewActive() && !forceUpdate && !autoUpdate)){
-            view.setShowTableauPanel(c.getName(), c.getImage(), c.getPTM());
+        if(!forceUpdate && !autoUpdate) {
+            view.setShowTableauPanel(c.getName(),c.getImage(),c.getPTM());
         }
+        //if(view.getChannelsViewActive() && (forceUpdate || autoUpdate)){
+        //    view.setShowChannelsPanel();
+        //} else if(/*(!view.getChannelsViewActive() && forceUpdate && !autoUpdate) ||*/
+        //        (view.getChannelsViewActive() && !forceUpdate && !autoUpdate)){
+        //    view.setShowTableauPanel(c.getName(), c.getImage(), c.getPTM());
+        //}
 
         if(c.isPtmEmpty()) {
             ProgramTimer timer = new ProgramTimer(c, this);
             timer.startTimer();
+            //programController = new ProgramController2(c, view);
             programController.getNewData();
             programController.startWorker();
             cachedChannels.add(c);
+
         } else if (forceUpdate || autoUpdate){
             c.getPTM().resetProgramList();
             programController = new ProgramController2(c, view);
-            System.out.println("Start worker 1");
             programController.startWorker();
         }
-        programController.getNewData();
+        //programController.getNewData();
     }
 
     @Override
     public void hasUpdated() {
         Channel c = getChannels.getLastAdded();
-        System.out.println(c.getName() + " - Thread: "+ Thread.currentThread().getName());
         view.setButton(c.getName(), c.getImage());
 
         view.setChannelButtonListener(e -> {
             try {
                 programController = new ProgramController2(c, view);
-                System.out.println("Start worker 2");
-                //programController.getNewData();
-                //programController.startWorker();
+                //Hamnar i loop
                 getData(c, false, false);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);

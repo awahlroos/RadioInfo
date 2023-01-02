@@ -22,7 +22,6 @@ public class NewProgramHandler extends SwingWorker<ArrayList<Program>,Void> {
     @Override
     protected ArrayList<Program> doInBackground() throws Exception {
         ProgramHandler handler = new ProgramHandler(channel);
-        view.setViewCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         return handler.addFromAPI();
     }
 
