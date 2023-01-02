@@ -1,3 +1,4 @@
+/*
 package Controllers;
 
 import Models.*;
@@ -24,7 +25,8 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object>{
         getPrograms = new GetPrograms(channel);
     }
 
-    /**
+    */
+/**
      * Computes a result, or throws an exception if unable to do so.
      *
      * <p>
@@ -35,7 +37,8 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object>{
      *
      * @return the computed result
      * @throws Exception if unable to compute a result
-     */
+     *//*
+
     @Override
     protected ArrayList<Program> doInBackground() throws Exception {
         //TODO: kanske ändra/flytta den här logiken
@@ -86,22 +89,27 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>, Object>{
             throw new RuntimeException(e);
         }
 
-            /*for(Program p : programs){
+            */
+/*for(Program p : programs){
                 channel.updatePTM(p);
                 System.out.println(p.getName());
                 System.out.println(p.getStartTime());
                 System.out.println(p.getEndTime());
                 System.out.println("-----------------------");
-            }*/
+            }*//*
+
             //Programdata ska laddas ner första gången en användare väljer att visa program från en kanal
             // och ska sedan automatiskt uppdateras med nytt data från servern en gång i timmen eller då
             // användaren manuellt väljer att uppdatera datat.  Om kanaldata redan visats av användaren
             // ska inget nytt data laddas ner vid kanalbyte utan det cashade datat användas.
         //} catch (InterruptedException e) {
-            /*throw new RuntimeException(e);
+            */
+/*throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
-        }*/
+        }*//*
+
     }
 
 }
+*/

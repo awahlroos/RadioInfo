@@ -85,4 +85,9 @@ public class ProgramTableModel extends AbstractTableModel {
     public void resetProgramList(){
         programList = new ArrayList<>();
     }
+
+    public void setProgramList(ArrayList<Program> programList){
+        this.programList = programList;
+        this.fireTableDataChanged();
+    }
 }

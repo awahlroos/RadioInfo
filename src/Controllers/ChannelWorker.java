@@ -2,30 +2,27 @@ package Controllers;
 
 import Models.Channel;
 import Models.GetChannels;
-import Models.ProgramHandler;
 import Views.StartView;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
 
-    private ArrayList<Channel> channels = new ArrayList<>();
     private GetChannels getChannels = new GetChannels();
     private StartView view;
     private ArrayList<Channel> cachedChannels = new ArrayList<>();
-    private ProgramController2 c2;
-    private ProgramHandler worker;
-
+    private ProgramController2 programController;
     public ChannelWorker(){}
 
-    //TODO: Flytta inläsning av data från swing till annan tråd (Thread, timer, etc)
     @Override
     protected ArrayList<Channel> doInBackground() throws ParserConfigurationException, IOException, SAXException {
+        System.out.println("as");
         return getChannels.getFromAPI();
     }
 
@@ -33,16 +30,19 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
     public void done(){
         try {
 
-            channels = get();
+            ArrayList<Channel> channels = get();
             view = new StartView("Radio Info");
+            //view.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
             //Setup for buttons and add listeners
             for(Channel c : channels){
                 view.setButton(c.getName(), c.getImage());
                 view.setChannelButtonListener(e -> {
                     try {
-                        c2 = new ProgramController2(c, view);
-                        c2.getNewData();
+                        programController = new ProgramController2(c, view);
+                        programController.getNewData();
+                        programController.startWorker();
+
                         getData(c, false, false);
                     } catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
@@ -66,10 +66,10 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+        //view.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     public void getData(Channel c, boolean forceUpdate, boolean autoUpdate) throws InterruptedException {
-
 
         if(view.getChannelsViewActive() && forceUpdate){
             view.setShowChannelsPanel();
@@ -79,26 +79,14 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
         }
 
         if(c.isPtmEmpty()) {
-            //New handler
-            worker = new ProgramHandler(c);
-            worker.execute();
             ProgramTimer timer = new ProgramTimer(c, this);
             timer.startTimer();
-
-            //ProgramController2 controller2 = new ProgramController2(c, view);
-            //controller2.getNewData();
-            //TODO: Om en kanal failar att ladda in kommer detta ändå köras, man kan sätta lyssnare för att lösa detta
-
             cachedChannels.add(c);
-
         } else if (forceUpdate || autoUpdate){
             c.getPTM().resetProgramList();
-            worker = new ProgramHandler(c);
-            worker.execute();
-            //c2.getNewData();
-            //ProgramController2 controller2 = new ProgramController2(c, view);
+            programController = new ProgramController2(c, view);
+            programController.startWorker();
         }
-        c2.getNewData();
-
+        programController.getNewData();
     }
 }

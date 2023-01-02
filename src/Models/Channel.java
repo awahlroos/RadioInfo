@@ -39,7 +39,8 @@ public class Channel {
     public ProgramTableModel getPTM(){
         return ptm;
     }
-    public void updatePTM(Program p){
-        ptm.addProgram(p);
+    public void updatePTM(ArrayList<Program> programList){
+        //ptm.addProgram(p);
+        ptm.setProgramList(programList);
     }
 }

@@ -44,7 +44,7 @@ public class GetChannels {
                 channels.add(new Channel(
                         eElement.getAttribute("name"),
                         //TODO: Uncomment image when done
-                        eElement.getAttribute("id"), null /*image*/));
+                        eElement.getAttribute("id"), image));
             }
         }
         return channels;

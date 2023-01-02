@@ -27,7 +27,7 @@ public class ProgramTimer extends Timer {
                     throw new RuntimeException(e);
                 }
             }
-        }, 30*1000, 30*1000);
+        }, 10*1000, 10*1000);
     }
 
 

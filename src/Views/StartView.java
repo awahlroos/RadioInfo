@@ -27,6 +27,7 @@ public class StartView {
     private JPanel panelContent = new JPanel();
 
     private boolean channelsViewActive;
+    private Cursor c = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 
 
     public StartView(String title) {
@@ -184,5 +185,9 @@ public class StartView {
 
     public boolean getChannelsViewActive(){
         return channelsViewActive;
+    }
+
+    public void setCursor(Cursor c){
+        this.c = c;
     }
 }

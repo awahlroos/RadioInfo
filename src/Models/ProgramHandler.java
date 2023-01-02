@@ -1,14 +1,18 @@
+
 package Models;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.crypto.spec.PSource;
 import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -16,23 +20,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramHandler extends SwingWorker<Void, Program> {
+public class ProgramHandler{
 
     private final Channel channel;
     private final LocalDateTime currentTime;
     private final LocalDateTime rangeBefore;
     private final LocalDateTime rangeAfter;
+    private ArrayList<Program> programList;
 
     public ProgramHandler(Channel channel){
         this.channel = channel;
+        programList = new ArrayList<>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         currentTime = ZonedDateTime.parse(LocalDateTime.now().format(dtf)).toLocalDateTime();
         rangeBefore = currentTime.minusHours(6);
         rangeAfter = currentTime.plusHours(12);
     }
 
-    @Override
-    protected Void doInBackground() throws Exception {
+    public ArrayList<Program> addFromAPI() throws ParserConfigurationException, InterruptedException, IOException, SAXException {
 
         System.out.println("----- Hämtning från API, kanal: " + channel.getName() + " -----");
         //Get Document Builder
@@ -55,10 +60,10 @@ public class ProgramHandler extends SwingWorker<Void, Program> {
                     "&pagination=false&date=" + currentTime.plusDays(1));
             addToProgramList(document);
         }
-        return null;
+        return programList;
     }
 
-    private void addToProgramList(Document doc) throws InterruptedException {
+    private void addToProgramList(Document doc){
         doc.getDocumentElement().normalize();
         NodeList nList = doc.getElementsByTagName("scheduledepisode");
 
@@ -93,7 +98,7 @@ public class ProgramHandler extends SwingWorker<Void, Program> {
                             description,
                             image);
 
-                    publish(program);
+                    programList.add(program);
                 }
             }
         }
@@ -110,12 +115,5 @@ public class ProgramHandler extends SwingWorker<Void, Program> {
         String strDate = date.format(dtf);
         return strDate;
     }
-
-    //Update the PTM on EDT
-    @Override
-    protected void process(List<Program> chunks) {
-        for(Program p : chunks){
-            channel.updatePTM(p);
-        }
-    }
 }
+

@@ -2,19 +2,16 @@ package Controllers;
 
 import Models.Channel;
 import Models.Program;
-import Models.ProgramHandler;
 import Models.ProgramTableModel;
 import Views.StartView;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 
 public class ProgramController2 {
     private Channel channel;
     private StartView view;
-    private ProgramHandler worker;
 
     public ProgramController2(Channel channel, StartView view){
         this.channel = channel;
@@ -23,10 +20,7 @@ public class ProgramController2 {
 
     public void getNewData(){
 
-        //worker = new ProgramHandler(channel);
-        //worker.execute();
         ProgramTableModel programs = channel.getPTM();
-
         MouseAdapter adapter = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -41,5 +35,10 @@ public class ProgramController2 {
             }
         };
         view.setJTableOnClickListener(adapter);
+    }
+
+    public void startWorker(){
+        NewProgramHandler worker = new NewProgramHandler(channel);
+        worker.execute();
     }
 }
