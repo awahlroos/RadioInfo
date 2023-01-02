@@ -112,8 +112,8 @@ public class StartView {
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
-
         channelPanel.add(button);
+        frame.revalidate();
     }
     public void setChannelButtonListener(ActionListener a){
         button.addActionListener(a);

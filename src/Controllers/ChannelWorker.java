@@ -6,49 +6,43 @@ import Views.StartView;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
+public class ChannelWorker extends SwingWorker<Void, Object> implements ChannelListener {
 
     private GetChannels getChannels = new GetChannels();
     private StartView view;
     private ArrayList<Channel> cachedChannels = new ArrayList<>();
     private ProgramController2 programController;
-    public ChannelWorker(){}
+    public ChannelWorker(){
+        getChannels.setChangeListener(this);
+        view = new StartView("Radio Info");
+    }
 
     @Override
-    protected ArrayList<Channel> doInBackground() throws ParserConfigurationException, IOException, SAXException {
-        System.out.println("as");
-        return getChannels.getFromAPI();
+    protected Void doInBackground() throws ParserConfigurationException, IOException, SAXException {
+        getChannels.getFromAPI();
+        return null;
     }
 
     @Override
     public void done(){
-        try {
+            //ArrayList<Channel> channels = get();
 
-            ArrayList<Channel> channels = get();
-            view = new StartView("Radio Info");
             //view.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
             //Setup for buttons and add listeners
-            for(Channel c : channels){
-                view.setButton(c.getName(), c.getImage());
-                view.setChannelButtonListener(e -> {
-                    try {
-                        programController = new ProgramController2(c, view);
-                        programController.getNewData();
-                        programController.startWorker();
+            //for(Channel c : channels){
 
-                        getData(c, false, false);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-            }
+            //}
 
             view.setUpdateChannelsButtonListener(e -> {
                 for (Channel cachedChannel : cachedChannels) {
@@ -61,11 +55,7 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
             });
             view.setAllChannelsButtonListener(e -> view.setShowChannelsPanel());
 
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        }
+
         //view.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
@@ -81,12 +71,34 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object>{
         if(c.isPtmEmpty()) {
             ProgramTimer timer = new ProgramTimer(c, this);
             timer.startTimer();
+            programController.getNewData();
+            programController.startWorker();
             cachedChannels.add(c);
         } else if (forceUpdate || autoUpdate){
             c.getPTM().resetProgramList();
             programController = new ProgramController2(c, view);
+            System.out.println("Start worker 1");
             programController.startWorker();
         }
         programController.getNewData();
+    }
+
+    @Override
+    public void hasUpdated() {
+        Channel c = getChannels.getLastAdded();
+        System.out.println(c.getName() + " - Thread: "+ Thread.currentThread().getName());
+        view.setButton(c.getName(), c.getImage());
+
+        view.setChannelButtonListener(e -> {
+            try {
+                programController = new ProgramController2(c, view);
+                System.out.println("Start worker 2");
+                //programController.getNewData();
+                //programController.startWorker();
+                getData(c, false, false);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 }

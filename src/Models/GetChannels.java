@@ -1,5 +1,6 @@
 package Models;
 
+import Controllers.ChannelListener;
 import Models.Channel;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -7,18 +8,29 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.swing.event.ChangeListener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EventListener;
 
 public class GetChannels {
 
+    private ChannelListener listener;
+    private ArrayList<Channel> channels;
     public GetChannels(){}
-    public ArrayList<Channel> getFromAPI() throws ParserConfigurationException, IOException, SAXException {
-        ArrayList<Channel> channels = new ArrayList<>();
+    public void getFromAPI() throws ParserConfigurationException, IOException, SAXException {
+
+
+        System.out.println("getChannels.getFromAPI()" + Thread.currentThread().getName());
+
+        channels = new ArrayList<>();
         String image;
+
         //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -44,9 +56,19 @@ public class GetChannels {
                 channels.add(new Channel(
                         eElement.getAttribute("name"),
                         //TODO: Uncomment image when done
-                        eElement.getAttribute("id"), image));
+                        eElement.getAttribute("id"), null /*image*/));
+                listener.hasUpdated();
             }
         }
-        return channels;
+        //return channels;
     }
+
+    public void setChangeListener(ChannelListener listener) {
+        this.listener = listener;
+    }
+
+    public Channel getLastAdded(){
+        return channels.get(channels.size()-1);
+    }
+
 }
