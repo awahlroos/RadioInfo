@@ -12,17 +12,18 @@ import java.net.MalformedURLException;
 public class ProgramController2 {
     private Channel channel;
     private StartView view;
+    private ProgramTableModel programs;
+    private MouseAdapter adapter;
+    private NewProgramHandler worker;
 
     public ProgramController2(Channel channel, StartView view){
         this.channel = channel;
         this.view = view;
+        programs = channel.getPTM();
     }
 
-    public void getNewData(){
-
-        ProgramTableModel programs = channel.getPTM();
-
-        MouseAdapter adapter = new MouseAdapter() {
+    public void initMouseHandler(MouseAdapter a){
+        a = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int rowIndex = view.getTableuRow(e);
@@ -36,11 +37,11 @@ public class ProgramController2 {
                 }
             }
         };
-        view.setJTableOnClickListener(adapter);
+        view.setJTableOnClickListener(a);
     }
 
     public void startWorker(){
-        NewProgramHandler worker = new NewProgramHandler(channel, view);
+        worker = new NewProgramHandler(channel, view);
         worker.execute();
     }
 }

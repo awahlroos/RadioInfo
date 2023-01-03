@@ -70,8 +70,12 @@ public class StartView {
         channelsViewActive = true;
     }
 
-    public void setShowTableauPanel(String name, String image, ProgramTableModel tbl){
+    public void clearTables(){
+        tableauPanel.removeAll();
+        tableauTable = new JTable();
+    }
 
+    public void setShowTableauPanel(String name, String image, ProgramTableModel tbl){
 
         tableauPanel.removeAll();
         this.image = image;
@@ -79,12 +83,10 @@ public class StartView {
         panelContent.add(tableauPanel, "tableau");
         tableauTable.setModel(tbl);
 
-
         JScrollPane scrollPane = new JScrollPane(tableauTable);
         Label programName = new Label(name);
 
         JPanel container = new JPanel(new BorderLayout());
-
 
         programName.setFont(new Font("Tahoma", Font.BOLD, 24));
 
@@ -130,6 +132,19 @@ public class StartView {
     public void setJTableOnClickListener(MouseAdapter adapter) {
         tableauTable.addMouseListener(adapter);
     }
+
+
+
+/*
+    public MouseListener[] getJTableOnClickListeners(){
+        return tableauTable.getMouseListeners();
+    }
+
+    public void removeJTableOnClickListener(){
+        for(int i = 0; i < tableauTable.getMouseListeners().length; i++){
+            tableauTable.removeMouseListener(tableauTable.getMouseListeners()[i]);
+        }
+    }*/
 
     public void showDetails(String name, String startTime, String endTime, String image, String description)
             throws MalformedURLException {
@@ -181,13 +196,5 @@ public class StartView {
 
     public int getTableuRow(MouseEvent e){
         return tableauTable.rowAtPoint(e.getPoint());
-    }
-
-    public boolean getChannelsViewActive(){
-        return channelsViewActive;
-    }
-
-    public void setViewCursor(Cursor c){
-        frame.setCursor(c);
     }
 }

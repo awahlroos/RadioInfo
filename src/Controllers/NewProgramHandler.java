@@ -14,6 +14,7 @@ public class NewProgramHandler extends SwingWorker<ArrayList<Program>,Void> {
     private Channel channel;
     private StartView view;
     private ArrayList<Program> programList = new ArrayList<>();
+    private ProgramHandler handler;
     public NewProgramHandler(Channel channel, StartView view){
         this.channel = channel;
         this.view = view;
@@ -21,16 +22,14 @@ public class NewProgramHandler extends SwingWorker<ArrayList<Program>,Void> {
 
     @Override
     protected ArrayList<Program> doInBackground() throws Exception {
-        ProgramHandler handler = new ProgramHandler(channel);
+        handler = new ProgramHandler(channel);
         return handler.addFromAPI();
     }
 
     @Override
     protected void done() {
         try {
-            view.setViewCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            programList = get();
-            channel.updatePTM(programList);
+            channel.updatePTM(get());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
