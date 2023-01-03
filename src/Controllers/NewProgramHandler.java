@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 public class NewProgramHandler extends SwingWorker<ArrayList<Program>,Void> {
     private Channel channel;
     private StartView view;
-    private ArrayList<Program> programList = new ArrayList<>();
     private ProgramHandler handler;
     public NewProgramHandler(Channel channel, StartView view){
         this.channel = channel;
@@ -30,10 +29,8 @@ public class NewProgramHandler extends SwingWorker<ArrayList<Program>,Void> {
     protected void done() {
         try {
             channel.updatePTM(get());
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+        } catch (InterruptedException | ExecutionException e) {
+            view.showErrorDialog("Error when fetching data");
         }
 
     }

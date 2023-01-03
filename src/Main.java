@@ -4,7 +4,8 @@ import javax.swing.*;
 
 public class Main {
     public static void main(String[] args) {
-        ChannelWorker chWorker = new ChannelWorker();
-        SwingUtilities.invokeLater(chWorker);
+        SwingUtilities.invokeLater(ChannelWorker::new);
+        //ChannelWorker chWorker = new ChannelWorker();
+        //SwingUtilities.invokeLater(chWorker);
     }
 }

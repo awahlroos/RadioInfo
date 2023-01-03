@@ -15,18 +15,14 @@ public class ProgramTimer extends Timer {
         this.worker = worker;
     }
 
-    //Synchronized function to update latest fetch
+
     public void startTimer(){
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                try {
-                    worker.getData(channel, false, true );
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                worker.getData(channel, false, true );
             }
-        }, 30*1000, 30*1000);
+        }, 3600*1000, 3600*1000);
     }
 }

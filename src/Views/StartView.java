@@ -29,18 +29,15 @@ public class StartView {
     private boolean channelsViewActive;
     private Cursor c = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
 
-
     public StartView(String title) {
         //Create the top level frame/window
         frame=new JFrame(title);
         tableauTable = new JTable();
 
-
         JMenuBar menubar = new JMenuBar( );
         JMenu menu = new JMenu("Meny");
         allChannels = new JMenuItem("Alla kanaler");
         updateChannels = new JMenuItem("Uppdatera");
-
 
         menubar.add(menu);
         menu.add(allChannels);
@@ -61,24 +58,20 @@ public class StartView {
         frame.setPreferredSize(new Dimension(800,600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setVisible(true);
         channelsViewActive = true;
     }
 
+    public void setVisible(){
+        frame.setVisible(true);
+    }
     public void setShowChannelsPanel(){
         cl.show(panelContent, "channels");
         channelsViewActive = true;
     }
 
-    public void clearTables(){
-        tableauPanel.removeAll();
-        tableauTable = new JTable();
-    }
-
-    public void setShowTableauPanel(String name, String image, ProgramTableModel tbl){
+    public void setShowTableauPanel(String name, ProgramTableModel tbl){
 
         tableauPanel.removeAll();
-        this.image = image;
         tableauTable = new JTable();
         panelContent.add(tableauPanel, "tableau");
         tableauTable.setModel(tbl);
@@ -116,6 +109,7 @@ public class StartView {
         }
         channelPanel.add(button);
         frame.revalidate();
+        //frame.repaint();
     }
     public void setChannelButtonListener(ActionListener a){
         button.addActionListener(a);
@@ -127,74 +121,27 @@ public class StartView {
         updateChannels.addActionListener(a);
     }
 
-
-    //TODO: Får man göra detta här i view?
     public void setJTableOnClickListener(MouseAdapter adapter) {
         tableauTable.addMouseListener(adapter);
     }
 
-
-
-/*
-    public MouseListener[] getJTableOnClickListeners(){
-        return tableauTable.getMouseListeners();
+    public int getTableauRow(MouseEvent e){
+        return tableauTable.rowAtPoint(e.getPoint());
     }
 
-    public void removeJTableOnClickListener(){
-        for(int i = 0; i < tableauTable.getMouseListeners().length; i++){
-            tableauTable.removeMouseListener(tableauTable.getMouseListeners()[i]);
-        }
+    public void showErrorDialog(String message){
+        JOptionPane.showMessageDialog(null ,message,"Error",JOptionPane.ERROR_MESSAGE);
+    }
+
+    public JFrame getFrameHolder(){
+        return frameHolder;
+    }
+
+    /*public void setCursor(Cursor c){
+        this.c = c;
     }*/
 
-    public void showDetails(String name, String startTime, String endTime, String image, String description)
-            throws MalformedURLException {
-        JDialog dialog = new JDialog(frameHolder, "Mer information: " + name, true);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(new EmptyBorder(15, 15, 15, 15));
-
-        JLabel nameLabel = new JLabel(name);
-        nameLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        nameLabel.setFont(new Font("Tahoma", Font.BOLD,16));
-        panel.add(nameLabel);
-
-        JLabel timeLabel = new JLabel(startTime + " - " + endTime);
-        timeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(timeLabel);
-
-        //TODO: Får man göra denna logik i View?
-        Image img;
-        Image resizedImg;
-        JLabel imageLabel = new JLabel();
-        if(image == null) {
-            URL imageUrl = this.getClass().getResource("/Assets/imageNotFound.png");
-            img = new ImageIcon(imageUrl, "image").getImage();
-        } else {
-            img = new ImageIcon(new URL(image), "image").getImage();
-        }
-        resizedImg = img.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH);
-        imageLabel.setIcon(new ImageIcon(new ImageIcon(resizedImg).getImage(), "image"));
-        imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        imageLabel.setBorder(new EmptyBorder(10,0,10,0));
-        panel.add(imageLabel);
-
-        JTextArea descriptionJTA = new JTextArea(description);
-        descriptionJTA.setAlignmentX(Component.CENTER_ALIGNMENT);
-        descriptionJTA.setEditable(false);
-        descriptionJTA.setLineWrap(true);
-        descriptionJTA.setWrapStyleWord(true);
-        descriptionJTA.setOpaque(false);
-        descriptionJTA.setSize(new Dimension(300, descriptionJTA.getPreferredSize().height));
-        panel.add(descriptionJTA);
-
-        dialog.add(panel);
-        dialog.pack();
-        dialog.setLocationRelativeTo(frame);
-        dialog.setVisible(true);
-    }
-
-    public int getTableuRow(MouseEvent e){
-        return tableauTable.rowAtPoint(e.getPoint());
+    public JFrame getFrame(){
+        return frame;
     }
 }
