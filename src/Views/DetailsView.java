@@ -6,6 +6,9 @@ import java.awt.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Class to display more information about a program.
+ */
 public class DetailsView {
     private final JPanel panel;
     public DetailsView(String name, String startTime, String endTime, String image, String description,

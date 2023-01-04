@@ -9,6 +9,9 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * ProgramWorker: Class responsible for fetching data from API using a model class, then updating ProgramTableModel.
+ */
 public class ProgramWorker extends SwingWorker<ArrayList<Program>,Void> {
     private final Channel channel;
     private final StartView view;

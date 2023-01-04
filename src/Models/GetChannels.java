@@ -12,6 +12,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * GetChannels: Class containing logic for fetching data from API. Called from ChannelWorker (controller).
+ */
 public class GetChannels {
 
     public GetChannels(){}
@@ -20,30 +23,25 @@ public class GetChannels {
         ArrayList<Channel> channels = new ArrayList<>();
         String image;
 
-        //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        //Build Document
         Document document = builder.parse("http://api.sr.se/api/v2/channels?pagination=false");
-
-        //Normalize the XML Structure; It's just too important !!
         document.getDocumentElement().normalize();
-        //Get all employees
-        NodeList nList = document.getElementsByTagName("channel");
-        for (int temp = 0; temp < nList.getLength(); temp++) {
-            Node node = nList.item(temp);
+
+        NodeList nodeList = document.getElementsByTagName("channel");
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE)
             {
-                //Print each employee's detail
-                Element eElement = (Element) node;
+                Element element = (Element) node;
 
-                if(!(eElement.getElementsByTagName("image").getLength() == 0)){
-                    image = eElement.getElementsByTagName("image").item(0).getTextContent();
+                if(!(element.getElementsByTagName("image").getLength() == 0)){
+                    image = element.getElementsByTagName("image").item(0).getTextContent();
                 } else {
                     image = null;
                 }
                 channels.add(new Channel(
-                        eElement.getAttribute("name"), eElement.getAttribute("id"), image));
+                        element.getAttribute("name"), element.getAttribute("id"), image));
             }
         }
         return channels;

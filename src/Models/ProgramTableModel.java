@@ -3,6 +3,9 @@ package Models;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
+/**
+ * ProgramTableModel: Class to display the data in an AbstractTableModel allowing dynamic updates to the GUI.
+ */
 public class ProgramTableModel extends AbstractTableModel {
 
     private ArrayList<Program> programList;

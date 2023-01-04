@@ -1,5 +1,8 @@
 package Models;
 
+/**
+ * Program: Class used for storing programs as objects.
+ */
 public class Program {
 
     private final String name;

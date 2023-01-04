@@ -5,6 +5,10 @@ import Models.Channel;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
+/**
+ * ProgramTimer: Class to manage updates hourly. Called first time a user loads channel data.
+ */
 public class ProgramTimer extends Timer {
 
     private final Channel channel;

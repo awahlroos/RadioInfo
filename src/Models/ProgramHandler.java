@@ -18,6 +18,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 
+/**
+ * ProgramHandler: Class containing logic for fetching data from API. Called from ProgramWorker (controller).
+ */
 public class ProgramHandler{
 
     private final Channel channel;
@@ -26,6 +29,9 @@ public class ProgramHandler{
     private final LocalDateTime rangeAfter;
     private final ArrayList<Program> programList;
 
+    /**
+     * PrograHandler(): Get the current time and create the desired time interval for program tableau.
+     */
     public ProgramHandler(Channel channel){
         this.channel = channel;
         programList = new ArrayList<>();
@@ -35,9 +41,12 @@ public class ProgramHandler{
         rangeAfter = currentTime.plusHours(12);
     }
 
+    /**
+     * addFromAPI(): Logic for fetching program data from yesterday's or tomorrow's tableau
+     * depending on the current time.
+     */
     public ArrayList<Program> addFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
-        //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document;
@@ -60,37 +69,40 @@ public class ProgramHandler{
         return programList;
     }
 
+    /**
+     * addToProgramList(): Contains logic to determine whether a program should be displayed in the tableau or not.
+     */
     private void addToProgramList(Document doc){
         doc.getDocumentElement().normalize();
-        NodeList nList = doc.getElementsByTagName("scheduledepisode");
+        NodeList nodeList = doc.getElementsByTagName("scheduledepisode");
 
-        for (int temp = 0; temp < nList.getLength(); temp++) {
+        for (int i = 0; i < nodeList.getLength(); i++) {
 
-            Node node = nList.item(temp);
+            Node node = nodeList.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE)
             {
-                Element eElement = (Element) node;
+                Element element = (Element) node;
 
                 LocalDateTime startTime = convertStringToDate(
-                        eElement.getElementsByTagName("starttimeutc").item(0).getTextContent());
+                        element.getElementsByTagName("starttimeutc").item(0).getTextContent());
                 LocalDateTime endTime = convertStringToDate(
-                        eElement.getElementsByTagName("endtimeutc").item(0).getTextContent());
+                        element.getElementsByTagName("endtimeutc").item(0).getTextContent());
 
 
                 if(endTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
 
                     String description = "";
-                    if(!(eElement.getElementsByTagName("description").getLength() == 0)){
-                        description = eElement.getElementsByTagName("description").item(0).getTextContent();
+                    if(!(element.getElementsByTagName("description").getLength() == 0)){
+                        description = element.getElementsByTagName("description").item(0).getTextContent();
                     }
 
                     String image = null;
-                    if(!(eElement.getElementsByTagName("imageurl").getLength() == 0)){
-                        image = eElement.getElementsByTagName("imageurl").item(0).getTextContent();
+                    if(!(element.getElementsByTagName("imageurl").getLength() == 0)){
+                        image = element.getElementsByTagName("imageurl").item(0).getTextContent();
                     }
 
                     Program program = new Program(
-                            eElement.getElementsByTagName("title").item(0).getTextContent(),
+                            element.getElementsByTagName("title").item(0).getTextContent(),
                             formatDate(startTime), formatDate(endTime), description, image);
 
                     programList.add(program);
@@ -107,8 +119,7 @@ public class ProgramHandler{
 
     private String formatDate(LocalDateTime date){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
-        String strDate = date.format(dtf);
-        return strDate;
+        return date.format(dtf);
     }
 }
 

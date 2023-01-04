@@ -41,7 +41,8 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
 
     /**
      * done(): Called after doInBackground is finished.
-     *
+     * Gets the retrieved channels from doInBackground. Iterates over the channels and add them to a clickable
+     * button presented in the GUI.
      */
     @Override
     public void done(){
@@ -75,11 +76,13 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
                 });
             }
             view.setVisible();
+            //Set listener for manually updating data.
             view.setUpdateChannelsButtonListener(e -> {
                 for(int i = 0; i < cachedChannels.size(); i++){
                     getData(cachedChannels.get(i), true, false);
                 }
             });
+            //Set listener for showing all channels data.
             view.setAllChannelsButtonListener(e -> view.setShowChannelsPanel());
 
         } catch (InterruptedException | ExecutionException e) {
@@ -87,6 +90,10 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
         }
     }
 
+    /**
+     *  getData(): Fetch new tableau data if manually updating or after an hour of first loading the data, present
+     *  the previously fetched data otherwise.
+     */
     public void getData(Channel c, boolean forceUpdate, boolean autoUpdate){
         ProgramController programController = new ProgramController(c, view);
 

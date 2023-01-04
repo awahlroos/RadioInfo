@@ -8,6 +8,9 @@ import java.awt.event.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+/**
+ * Class to display the GUI. Uses layout manager CardLayout to switch between channels and tableau.
+ */
 public class StartView {
     private final JFrame frame;
     private final JFrame frameHolder = new JFrame();
@@ -21,7 +24,7 @@ public class StartView {
     private final JPanel panelContent = new JPanel();
 
     public StartView(String title) {
-        //Create the top level frame/window
+
         frame=new JFrame(title);
         tableauTable = new JTable();
 
@@ -37,14 +40,14 @@ public class StartView {
         frame.setJMenuBar(menubar);
 
         panelContent.setLayout(cl);
-        // Build panels
+
         channelPanel = new JPanel();
         tableauPanel = new JPanel();
 
         panelContent.add(channelPanel, "channels");
         panelContent.add(tableauPanel, "tableau");
         cl.show(panelContent, "channels");
-        //Add panels to the frame
+
         frame.add(panelContent);
         frame.setPreferredSize(new Dimension(800,600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -82,6 +85,9 @@ public class StartView {
         cl.show(panelContent, "tableau");
     }
 
+    /**
+     * setButton(): Used for setting buttons with name and image of a fetched channel.
+     */
     public void setButton(String name, String imgStr){
         button = new JButton(name);
         Image img;

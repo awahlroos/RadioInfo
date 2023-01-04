@@ -2,6 +2,9 @@ package Models;
 
 import java.util.ArrayList;
 
+/**
+ * Channel: Class used for storing channels as objects.
+ */
 public class Channel {
     private final String name;
     private final String id;
