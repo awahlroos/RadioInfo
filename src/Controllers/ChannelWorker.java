@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ChannelWorker: Controller class that is responsible for initializing an API fetch.
@@ -72,6 +73,7 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
                             }
                         }
                     };
+
                     view.setJTableOnClickListener(a);
                 });
             }
@@ -101,7 +103,8 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
             view.setShowTableauPanel(c.getName(),c.getPTM());
         }
 
-        if(c.isPtmEmpty()) {
+        if(c.isPtmEmpty() && !c.getVisited()) {
+            c.setVisited(true);
             programController.startWorker();
             ProgramTimer timer = new ProgramTimer(c, this);
             timer.startTimer();

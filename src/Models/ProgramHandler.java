@@ -47,6 +47,8 @@ public class ProgramHandler{
      */
     public ArrayList<Program> addFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
+        System.out.println("----- Hämtning från API, kanal: " + channel.getName() + " -----");
+
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document;
@@ -66,6 +68,7 @@ public class ProgramHandler{
                     "&pagination=false&date=" + currentTime.plusDays(1));
             addToProgramList(document);
         }
+
         return programList;
     }
 

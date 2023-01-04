@@ -4,6 +4,7 @@ import Models.Channel;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -24,7 +25,7 @@ public class ProgramTimer extends Timer {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                worker.getData(channel, false, true );
+                worker.getData(channel, false, true);
             }
         }, 3600*1000, 3600*1000);
     }
