@@ -2,7 +2,11 @@ package Models;
 
 public class Program {
 
-    private String name, startTime, endTime, description, image;
+    private final String name;
+    private final String startTime;
+    private final String endTime;
+    private final String description;
+    private final String image;
     public Program(String name, String startTime, String endTime, String description, String image){
         this.name = name;
         this.startTime = startTime;

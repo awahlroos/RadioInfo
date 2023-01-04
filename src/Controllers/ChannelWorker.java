@@ -9,7 +9,6 @@ import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -17,34 +16,42 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * ChannelWorker: Controller class that is responsible for initializing an API fetch.
+ * Presents the fetched channels as buttons in a view.
+ */
 public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
 
-    private GetChannels getChannels = new GetChannels();
-    private StartView view;
-    private ArrayList<Channel> cachedChannels = new ArrayList<>();
-    private ProgramController2 programController;
-    private ArrayList<Channel> channels;
+    private final GetChannels getChannels = new GetChannels();
+    private final StartView view;
+    private final ArrayList<Channel> cachedChannels = new ArrayList<>();
     private MouseAdapter a;
     public ChannelWorker(){
         view = new StartView("Radio Info");
         this.execute();
     }
 
+    /**
+     * doInBackground(): Executed on a background thread. Calls a model to fetch from the API.
+     */
     @Override
     protected ArrayList<Channel> doInBackground() throws ParserConfigurationException, IOException, SAXException {
         return getChannels.getFromAPI();
     }
 
+    /**
+     * done(): Called after doInBackground is finished.
+     *
+     */
     @Override
     public void done(){
-        view.setVisible();
-        view.setButton("Hej", null);
         try {
-            channels  = get();
+            ArrayList<Channel> channels = get();
             for(Channel c : channels){
                 view.setButton(c.getName(), c.getImage());
                 view.setChannelButtonListener(e -> {
                     getData(c, false, false);
+                    //Use MouseAdapter to set on click listeners.
                     a = new MouseAdapter() {
                         @Override
                         public void mouseClicked(MouseEvent e) {
@@ -54,39 +61,23 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
                                 new DetailsView(program.getName(), program.getStartTime(), program.getEndTime(),
                                         program.getImage(), program.getDescription(), view.getFrameHolder(), view.getFrame());
                             } catch (MalformedURLException ex) {
-                                throw new RuntimeException(ex);
-                            }
-                            /*try {
-                                view.showDetails(program.getName(), program.getStartTime(), program.getEndTime(),
-                                        program.getImage(), program.getDescription());
-                            } catch (MalformedURLException ex) {
                                 try {
-                                    //If incorrect image display image not found
-                                    view.showDetails(program.getName(), program.getStartTime(), program.getEndTime(),
-                                            null, program.getDescription());
+                                    //If image URL not found, set to null to display default image
+                                    new DetailsView(program.getName(), program.getStartTime(), program.getEndTime(),
+                                            null, program.getDescription(), view.getFrameHolder(), view.getFrame());
                                 } catch (MalformedURLException exc) {
                                     view.showErrorDialog("Incorrect image URL for program");
                                 }
-                            }*/
+                            }
                         }
                     };
                     view.setJTableOnClickListener(a);
                 });
             }
-
-            //view.setVisible();
+            view.setVisible();
             view.setUpdateChannelsButtonListener(e -> {
-
-                /*for(int i = 0; i < cachedChannels.size(); i++){
-                    try {
-                        getData(cachedChannels.get(i), true, false);
-                    } catch (InterruptedException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                }*/
-
-                for (Channel cachedChannel : cachedChannels) {
-                    getData(cachedChannel, true, false);
+                for(int i = 0; i < cachedChannels.size(); i++){
+                    getData(cachedChannels.get(i), true, false);
                 }
             });
             view.setAllChannelsButtonListener(e -> view.setShowChannelsPanel());
@@ -97,8 +88,7 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
     }
 
     public void getData(Channel c, boolean forceUpdate, boolean autoUpdate){
-
-        programController = new ProgramController2(c, view);
+        ProgramController programController = new ProgramController(c, view);
 
         if(!forceUpdate && !autoUpdate) {
             view.setShowTableauPanel(c.getName(),c.getPTM());

@@ -7,8 +7,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.crypto.spec.PSource;
-import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,7 +16,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
+
 
 public class ProgramHandler{
 
@@ -26,7 +24,7 @@ public class ProgramHandler{
     private final LocalDateTime currentTime;
     private final LocalDateTime rangeBefore;
     private final LocalDateTime rangeAfter;
-    private ArrayList<Program> programList;
+    private final ArrayList<Program> programList;
 
     public ProgramHandler(Channel channel){
         this.channel = channel;
@@ -37,9 +35,8 @@ public class ProgramHandler{
         rangeAfter = currentTime.plusHours(12);
     }
 
-    public ArrayList<Program> addFromAPI() throws ParserConfigurationException, InterruptedException, IOException, SAXException {
+    public ArrayList<Program> addFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
-        System.out.println("----- Hämtning från API, kanal: " + channel.getName() + " -----");
         //Get Document Builder
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -76,9 +73,11 @@ public class ProgramHandler{
 
                 LocalDateTime startTime = convertStringToDate(
                         eElement.getElementsByTagName("starttimeutc").item(0).getTextContent());
+                LocalDateTime endTime = convertStringToDate(
+                        eElement.getElementsByTagName("endtimeutc").item(0).getTextContent());
 
 
-                if(startTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
+                if(endTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
 
                     String description = "";
                     if(!(eElement.getElementsByTagName("description").getLength() == 0)){
@@ -92,11 +91,7 @@ public class ProgramHandler{
 
                     Program program = new Program(
                             eElement.getElementsByTagName("title").item(0).getTextContent(),
-                            formatDate(startTime),
-                            formatDate(convertStringToDate(
-                                    eElement.getElementsByTagName("endtimeutc").item(0).getTextContent())),
-                            description,
-                            image);
+                            formatDate(startTime), formatDate(endTime), description, image);
 
                     programList.add(program);
                 }

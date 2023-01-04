@@ -7,7 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 public class DetailsView {
-    private JPanel panel;
+    private final JPanel panel;
     public DetailsView(String name, String startTime, String endTime, String image, String description,
                        JFrame frameHolder, JFrame frame) throws MalformedURLException {
         JDialog dialog = new JDialog(frameHolder, "Mer information: " + name, true);

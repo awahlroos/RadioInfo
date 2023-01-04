@@ -3,11 +3,10 @@ package Models;
 import java.util.ArrayList;
 
 public class Channel {
-    //Kommer ha ett objekt av ProgramListModel som uppdateras en gång i timmen mha timer?
-    private String name;
-    private String id;
-    private String image;
-    private ProgramTableModel ptm;
+    private final String name;
+    private final String id;
+    private final String image;
+    private final ProgramTableModel ptm;
 
     public Channel(String name, String id, String image){
         this.image = image;
@@ -15,6 +14,7 @@ public class Channel {
         this.id = id;
         ptm = new ProgramTableModel();
     }
+
     public String getName() {
         return name;
     }
@@ -34,6 +34,7 @@ public class Channel {
     public ProgramTableModel getPTM(){
         return ptm;
     }
+
     public void updatePTM(ArrayList<Program> programList){
         ptm.setProgramList(programList);
     }

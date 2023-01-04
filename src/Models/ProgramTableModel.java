@@ -5,15 +5,10 @@ import java.util.ArrayList;
 
 public class ProgramTableModel extends AbstractTableModel {
 
-    ArrayList<Program> programList;
+    private ArrayList<Program> programList;
 
     public ProgramTableModel() {
         programList = new ArrayList<>();
-    }
-
-    public void addProgram(Program p) {
-        programList.add(p);
-        this.fireTableRowsInserted(programList.size()-1, programList.size());
     }
 
     /**
@@ -75,11 +70,6 @@ public class ProgramTableModel extends AbstractTableModel {
             case 2 -> "Slutar";
             default -> null;
         };
-    }
-
-    //TODO: Remove this, only for testing
-    public ArrayList<Program> getTableu(){
-        return programList;
     }
 
     public void resetProgramList(){

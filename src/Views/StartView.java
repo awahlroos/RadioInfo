@@ -3,7 +3,6 @@ package Views;
 import Models.ProgramTableModel;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.MalformedURLException;
@@ -11,23 +10,15 @@ import java.net.URL;
 
 public class StartView {
     private final JFrame frame;
-    private JFrame frameHolder = new JFrame();
+    private final JFrame frameHolder = new JFrame();
     private JButton button;
-    private JPanel channelPanel;
-    private JPanel tableauPanel;
-    private JMenuItem allChannels;
-    private JMenuItem updateChannels;
+    private final JPanel channelPanel;
+    private final JPanel tableauPanel;
+    private final JMenuItem allChannels;
+    private final JMenuItem updateChannels;
     private JTable tableauTable;
-    private String image;
-    private String description;
-    private String startTime;
-    private String endTime;
-    private String name;
-    private CardLayout cl = new CardLayout();
-    private JPanel panelContent = new JPanel();
-
-    private boolean channelsViewActive;
-    private Cursor c = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    private final CardLayout cl = new CardLayout();
+    private final JPanel panelContent = new JPanel();
 
     public StartView(String title) {
         //Create the top level frame/window
@@ -58,7 +49,6 @@ public class StartView {
         frame.setPreferredSize(new Dimension(800,600));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        channelsViewActive = true;
     }
 
     public void setVisible(){
@@ -66,7 +56,6 @@ public class StartView {
     }
     public void setShowChannelsPanel(){
         cl.show(panelContent, "channels");
-        channelsViewActive = true;
     }
 
     public void setShowTableauPanel(String name, ProgramTableModel tbl){
@@ -87,8 +76,10 @@ public class StartView {
         container.add(scrollPane, BorderLayout.CENTER);
         tableauPanel.add(container);
 
+        tableauTable.getColumnModel().getColumn(0).setPreferredWidth(150);
+        tableauTable.getColumnModel().getColumn(1).setPreferredWidth(30);
+        tableauTable.getColumnModel().getColumn(2).setPreferredWidth(30);
         cl.show(panelContent, "tableau");
-        channelsViewActive = false;
     }
 
     public void setButton(String name, String imgStr){
@@ -109,7 +100,6 @@ public class StartView {
         }
         channelPanel.add(button);
         frame.revalidate();
-        //frame.repaint();
     }
     public void setChannelButtonListener(ActionListener a){
         button.addActionListener(a);
@@ -136,10 +126,6 @@ public class StartView {
     public JFrame getFrameHolder(){
         return frameHolder;
     }
-
-    /*public void setCursor(Cursor c){
-        this.c = c;
-    }*/
 
     public JFrame getFrame(){
         return frame;

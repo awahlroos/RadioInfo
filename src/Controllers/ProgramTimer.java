@@ -7,14 +7,13 @@ import java.util.TimerTask;
 
 public class ProgramTimer extends Timer {
 
-    private Channel channel;
+    private final Channel channel;
     ChannelWorker worker;
 
     public ProgramTimer (Channel channel, ChannelWorker worker){
         this.channel = channel;
         this.worker = worker;
     }
-
 
     public void startTimer(){
         Timer timer = new Timer();

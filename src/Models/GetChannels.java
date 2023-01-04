@@ -14,11 +14,10 @@ import java.util.ArrayList;
 
 public class GetChannels {
 
-    private ArrayList<Channel> channels;
     public GetChannels(){}
     public ArrayList<Channel> getFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
-        channels = new ArrayList<>();
+        ArrayList<Channel> channels = new ArrayList<>();
         String image;
 
         //Get Document Builder
@@ -44,9 +43,7 @@ public class GetChannels {
                     image = null;
                 }
                 channels.add(new Channel(
-                        eElement.getAttribute("name"),
-                        //TODO: Uncomment image when done
-                        eElement.getAttribute("id"), image));
+                        eElement.getAttribute("name"), eElement.getAttribute("id"), image));
             }
         }
         return channels;
