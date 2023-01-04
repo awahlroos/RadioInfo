@@ -47,8 +47,6 @@ public class ProgramHandler{
      */
     public ArrayList<Program> addFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
-        System.out.println("----- Hämtning från API, kanal: " + channel.getName() + " -----");
-
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document;
