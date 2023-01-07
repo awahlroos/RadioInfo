@@ -4,8 +4,6 @@ import Models.Channel;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 
 /**
  * ProgramTimer: Class to manage updates hourly. Called first time a user loads channel data.
@@ -13,7 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ProgramTimer extends Timer {
 
     private final Channel channel;
-    ChannelWorker worker;
+    private final ChannelWorker worker;
 
     public ProgramTimer (Channel channel, ChannelWorker worker){
         this.channel = channel;

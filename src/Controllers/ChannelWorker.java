@@ -1,7 +1,7 @@
 package Controllers;
 
 import Models.Channel;
-import Models.GetChannels;
+import Models.ChannelHandler;
 import Models.Program;
 import Views.DetailsView;
 import Views.StartView;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * ChannelWorker: Controller class that is responsible for initializing an API fetch.
@@ -23,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
 
-    private final GetChannels getChannels = new GetChannels();
+    private final ChannelHandler channelHandler = new ChannelHandler();
     private final StartView view;
     private final ArrayList<Channel> cachedChannels = new ArrayList<>();
     private MouseAdapter a;
@@ -37,7 +36,7 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
      */
     @Override
     protected ArrayList<Channel> doInBackground() throws ParserConfigurationException, IOException, SAXException {
-        return getChannels.getFromAPI();
+        return channelHandler.getFromAPI();
     }
 
     /**
@@ -46,7 +45,7 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
      * button presented in the GUI.
      */
     @Override
-    public void done(){
+    protected void done(){
         try {
             ArrayList<Channel> channels = get();
             for(Channel c : channels){
@@ -61,19 +60,20 @@ public class ChannelWorker extends SwingWorker<ArrayList<Channel>, Object> {
                             Program program = c.getPTM().getProgramDetails(rowIndex);
                             try {
                                 new DetailsView(program.getName(), program.getStartTime(), program.getEndTime(),
-                                        program.getImage(), program.getDescription(), view.getFrameHolder(), view.getFrame());
+                                        program.getImage(), program.getDescription(), view.getFrameHolder(),
+                                        view.getFrame());
                             } catch (MalformedURLException ex) {
                                 try {
                                     //If image URL not found, set to null to display default image
                                     new DetailsView(program.getName(), program.getStartTime(), program.getEndTime(),
-                                            null, program.getDescription(), view.getFrameHolder(), view.getFrame());
+                                            null, program.getDescription(), view.getFrameHolder(),
+                                            view.getFrame());
                                 } catch (MalformedURLException exc) {
-                                    view.showErrorDialog("Incorrect image URL for program");
+                                    view.showErrorDialog("Incorrect image URL for program " + program.getName());
                                 }
                             }
                         }
                     };
-
                     view.setJTableOnClickListener(a);
                 });
             }

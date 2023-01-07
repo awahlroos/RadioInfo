@@ -13,11 +13,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * GetChannels: Class containing logic for fetching data from API. Called from ChannelWorker (controller).
+ * ChannelHandler: Class containing logic for fetching data from API. Called from ChannelWorker (controller).
  */
-public class GetChannels {
+public class ChannelHandler {
 
-    public GetChannels(){}
+    public ChannelHandler(){}
     public ArrayList<Channel> getFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
         ArrayList<Channel> channels = new ArrayList<>();

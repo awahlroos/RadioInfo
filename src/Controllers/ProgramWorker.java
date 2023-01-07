@@ -23,17 +23,20 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>,Void> {
 
     @Override
     protected ArrayList<Program> doInBackground() throws Exception {
-        ProgramHandler handler = new ProgramHandler(channel);
+        ProgramHandler handler = new ProgramHandler(channel.getId());
         return handler.addFromAPI();
     }
 
     @Override
     protected void done() {
         try {
-            channel.updatePTM(get());
+            ArrayList<Program> programs = get();
+            if(programs.size()==0){
+                programs.add(new Program("Inga program att visa", "-", "-", "-", null));
+            }
+            channel.updatePTM(programs);
         } catch (InterruptedException | ExecutionException e) {
-            view.showErrorDialog("Error when fetching data");
+            view.showErrorDialog("Error when fetching data for channel " + channel.getName());
         }
-
     }
 }

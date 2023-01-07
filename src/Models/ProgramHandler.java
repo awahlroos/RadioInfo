@@ -23,17 +23,17 @@ import java.util.ArrayList;
  */
 public class ProgramHandler{
 
-    private final Channel channel;
+    private final String channelId;
     private final LocalDateTime currentTime;
     private final LocalDateTime rangeBefore;
     private final LocalDateTime rangeAfter;
     private final ArrayList<Program> programList;
 
     /**
-     * PrograHandler(): Get the current time and create the desired time interval for program tableau.
+     * ProgramHandler(): Get the current time and create the desired time interval for program tableau.
      */
-    public ProgramHandler(Channel channel){
-        this.channel = channel;
+    public ProgramHandler(String channelId){
+        this.channelId = channelId;
         programList = new ArrayList<>();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
         currentTime = ZonedDateTime.parse(LocalDateTime.now().format(dtf)).toLocalDateTime();
@@ -52,17 +52,17 @@ public class ProgramHandler{
         Document document;
 
         if (currentTime.getHour() < 6) {
-            document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
+            document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channelId+
                     "&pagination=false&date=" + currentTime.minusDays(1));
             addToProgramList(document);
         }
 
-        document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
+        document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channelId+
                 "&pagination=false");
         addToProgramList(document);
 
         if(currentTime.getHour() > 11) {
-            document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channel.getId()+
+            document = builder.parse("http://api.sr.se/api/v2/scheduledepisodes?channelid="+channelId+
                     "&pagination=false&date=" + currentTime.plusDays(1));
             addToProgramList(document);
         }
