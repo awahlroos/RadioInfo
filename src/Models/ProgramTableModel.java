@@ -79,6 +79,10 @@ public class ProgramTableModel extends AbstractTableModel {
         programList = new ArrayList<>();
     }
 
+
+    /**
+     * Update the current program list with a new one. Important to notify all listeners on update.
+     */
     public void setProgramList(ArrayList<Program> programList){
         this.programList = programList;
         this.fireTableDataChanged();

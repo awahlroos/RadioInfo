@@ -5,8 +5,6 @@ import Models.ProgramTableModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Class to display the GUI. Uses layout manager CardLayout to switch between channels and tableau.
@@ -23,6 +21,10 @@ public class StartView {
     private final CardLayout cl = new CardLayout();
     private final JPanel panelContent = new JPanel();
 
+
+    /**
+     * StartView(): Crate a view showing the channels, add a menu
+     */
     public StartView(String title) {
 
         frame=new JFrame(title);
@@ -54,6 +56,10 @@ public class StartView {
         frame.pack();
     }
 
+
+    /**
+     * setVisible(): Makes the GUI visible. Called after all channels have loaded.
+     */
     public void setVisible(){
         frame.setVisible(true);
     }
@@ -61,6 +67,9 @@ public class StartView {
         cl.show(panelContent, "channels");
     }
 
+    /**
+     * setShowTableauPanel(): Uses a TableModel to display the stored tableau in a JTable.
+     */
     public void setShowTableauPanel(String name, ProgramTableModel tbl){
 
         tableauPanel.removeAll();
@@ -88,25 +97,15 @@ public class StartView {
     /**
      * setButton(): Used for setting buttons with name and image of a fetched channel.
      */
-    public void setButton(String name, String imgStr){
-        button = new JButton(name);
-        Image img;
+    public void setButton(String name, Image img){
         Image resizedImg;
-        try{
-            if(imgStr == null) {
-                URL imageUrl = this.getClass().getResource("/Assets/imageNotFound.png");
-                img = new ImageIcon(imageUrl, "image").getImage();
-            } else {
-                img = new ImageIcon(new URL(imgStr), "image").getImage();
-            }
-            resizedImg = img.getScaledInstance(40,40, java.awt.Image.SCALE_SMOOTH);
-            button.setIcon(new ImageIcon(resizedImg));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+        button = new JButton(name);
+        resizedImg = img.getScaledInstance(40,40, java.awt.Image.SCALE_SMOOTH);
+        button.setIcon(new ImageIcon(resizedImg));
         channelPanel.add(button);
         frame.revalidate();
     }
+
     public void setChannelButtonListener(ActionListener a){
         button.addActionListener(a);
     }

@@ -18,6 +18,12 @@ import java.util.ArrayList;
 public class ChannelHandler {
 
     public ChannelHandler(){}
+
+
+    /**
+     * getFromAPI(): Creates a document builder and parse the content from XML to a Document. The document can then
+     * be used to retrieve specific tag information, in this case a channel.
+     */
     public ArrayList<Channel> getFromAPI() throws ParserConfigurationException, IOException, SAXException {
 
         ArrayList<Channel> channels = new ArrayList<>();
@@ -35,11 +41,13 @@ public class ChannelHandler {
             {
                 Element element = (Element) node;
 
+                //Check if a channel has an image
                 if(!(element.getElementsByTagName("image").getLength() == 0)){
                     image = element.getElementsByTagName("image").item(0).getTextContent();
                 } else {
                     image = null;
                 }
+
                 channels.add(new Channel(
                         element.getAttribute("name"), element.getAttribute("id"), image));
             }

@@ -84,12 +84,13 @@ public class ProgramHandler{
             {
                 Element element = (Element) node;
 
+                //Convert startTime and edTime to date objects to allow comparison
                 LocalDateTime startTime = convertStringToDate(
                         element.getElementsByTagName("starttimeutc").item(0).getTextContent());
                 LocalDateTime endTime = convertStringToDate(
                         element.getElementsByTagName("endtimeutc").item(0).getTextContent());
 
-
+                //Add the program to our list if the program is in the allowed time interval.
                 if(endTime.isAfter(rangeBefore) && startTime.isBefore(rangeAfter)){
 
                     String description = "";
@@ -112,12 +113,19 @@ public class ProgramHandler{
         }
     }
 
+
+    /**
+     * convertStringToDate(): Converts a time of String format to a LocalDateTime in the user's timezone.
+     */
     private LocalDateTime convertStringToDate(String string){
         ZonedDateTime parsedDate = ZonedDateTime.parse(string);
         ZonedDateTime zdtLocal = ZonedDateTime.ofInstant(parsedDate.toInstant(), ZoneId.systemDefault());
         return zdtLocal.toLocalDateTime();
     }
 
+    /**
+     * formatDate(): Formats date to be displayed as only hours and minutes
+     */
     private String formatDate(LocalDateTime date){
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm");
         return date.format(dtf);

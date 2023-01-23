@@ -21,12 +21,20 @@ public class ProgramWorker extends SwingWorker<ArrayList<Program>,Void> {
         this.view = view;
     }
 
+    /**
+     * doInBackground(): Executed on a background thread. Creates a model class to fetch data for a specific channel.
+     */
     @Override
     protected ArrayList<Program> doInBackground() throws Exception {
         ProgramHandler handler = new ProgramHandler(channel.getId());
         return handler.addFromAPI();
     }
 
+
+    /**
+     * done(): Executed after doInBackground finishes. Updates the channel's TableModel with fetched data. If data
+     * could not be fetched for a channel the user will be noticed with an "empty" program.
+     */
     @Override
     protected void done() {
         try {

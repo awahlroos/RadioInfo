@@ -1,14 +1,12 @@
 package Controllers;
 
 import Models.Channel;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import java.awt.event.ActionListener;
 
 /**
  * ProgramTimer: Class to manage updates hourly. Called first time a user loads channel data.
  */
-public class ProgramTimer extends Timer {
+public class ProgramTimer {
 
     private final Channel channel;
     private final ChannelWorker worker;
@@ -18,13 +16,15 @@ public class ProgramTimer extends Timer {
         this.worker = worker;
     }
 
+    /**
+     * startTimer(): Method to manage periodic update of programs. Calls getData hourly which is responsible for
+     * initiating the method to make API-call.
+     */
     public void startTimer(){
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                worker.getData(channel, false, true);
-            }
-        }, 3600*1000, 3600*1000);
+        ActionListener updateData = evt -> worker.getData(channel, false, true);
+
+        javax.swing.Timer timer = new javax.swing.Timer(3600*1000, updateData);
+        timer.setRepeats(true);
+        timer.start();
     }
 }

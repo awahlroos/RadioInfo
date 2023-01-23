@@ -12,6 +12,10 @@ public class Channel {
     private final ProgramTableModel ptm;
     private boolean isVisited;
 
+
+    /**
+     * Channel: Constructor for creating a channel object, holding its own TableModel.
+     */
     public Channel(String name, String id, String image){
         this.image = image;
         this.name = name;

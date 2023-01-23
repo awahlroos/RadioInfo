@@ -3,16 +3,18 @@ package Views;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * Class to display more information about a program.
  */
 public class DetailsView {
     private final JPanel panel;
-    public DetailsView(String name, String startTime, String endTime, String image, String description,
-                       JFrame frameHolder, JFrame frame) throws MalformedURLException {
+
+    /**
+     * DetailsView: Creates a JDialog to display the information.
+     */
+    public DetailsView(String name, String startTime, String endTime, Image image, String description,
+                       JFrame frameHolder, JFrame frame){
         JDialog dialog = new JDialog(frameHolder, "Mer information: " + name, true);
 
         panel = new JPanel();
@@ -30,17 +32,10 @@ public class DetailsView {
         dialog.setVisible(true);
     }
 
-    private void addImage(String image) throws MalformedURLException {
-        Image img;
+    private void addImage(Image image){
         Image resizedImg;
         JLabel imageLabel = new JLabel();
-        if (image == null) {
-            URL imageUrl = this.getClass().getResource("/Assets/imageNotFound.png");
-            img = new ImageIcon(imageUrl, "image").getImage();
-        } else {
-            img = new ImageIcon(new URL(image), "image").getImage();
-        }
-        resizedImg = img.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH);
+        resizedImg = image.getScaledInstance(100, 100, java.awt.Image.SCALE_SMOOTH);
         imageLabel.setIcon(new ImageIcon(new ImageIcon(resizedImg).getImage(), "image"));
         imageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         imageLabel.setBorder(new EmptyBorder(10, 0, 10, 0));
